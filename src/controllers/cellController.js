@@ -45,21 +45,33 @@ module.exports = {
   show: async (req, res) => {
     try {
       const {code} = req.params;
+      
+      let resultos = await cell.findOne({ 
+        attributes: [
+          'code',
+          'model',
+          'price',
+          'brand',
+          'start_date',
+          'end_date',
+          'color'
+        ],
+        where: {code}
+      });
+      if (resultos === null) {
+        res.send(`O código ${code} não foi encontrado. Por favor digite um código válido! `)
+      }
 
-      let result3 = await cell.sequelize.query(
-        'SELECT code, model, price, brand, start_date, end_date, color FROM cells WHERE code = :code ',
-      { replacements: { code: code }, type: cell.sequelize.QueryTypes.SELECT }
-      )
+         return res.json(resultos);
 
-      res.json(result3);
-
-    } catch (error) {
-      console.log(error)
-      res.sendStatus(400);
+      } catch (error) {
+      // console.log(error)
+      // res.status(401).json({ error: "Código não encontrado!" });
     }
   },
   update: async (req, res) => {
     try {
+      const {code} = req.params;
       const { model, price, brand, start_date, end_date, color } = req.body;
       let result = await cell.update(
         {
@@ -70,7 +82,7 @@ module.exports = {
           end_date,
           color,
         },
-        { where: { code: req.params.code } })
+        { where: { code } })
       //let result = await cell.update(req.body,{where: {id: req.params.id}})
       //res.sendStatus(204)
       res.json(result);
@@ -84,7 +96,7 @@ module.exports = {
       try {
         const {code} = req.params
         const result = await cell.destroy({ where: { code: code } });
-        res.send(`Produto ${code} removido com sucesso`)
+        res.send(`O produto ${code} foi removido com sucesso!`)
         //res.sendStatus(204);
       } catch (error) {
         res.sendStatus(400);
@@ -110,6 +122,6 @@ module.exports = {
       .delete();
 
     return res.status(204).send();
-  } */
+  }              011714       */
   
 };
